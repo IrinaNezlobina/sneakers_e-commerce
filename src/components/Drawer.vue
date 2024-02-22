@@ -4,7 +4,7 @@
  <DrawerHead/>
  <CartItemList/>
 
- <div class="flex gap-4 mb-6 mt-7-7 flex-col">
+ <div class="flex gap-4 mt-7 flex-col">
   <div class="flex gap-2">
     <span>
       Итого
