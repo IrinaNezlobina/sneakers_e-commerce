@@ -1,47 +1,65 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import CardList from '@/components/CardList.vue'
 import Drawer from '@/components/Drawer.vue'
 import axios from 'axios'
 
+const items = ref([])
 
-const items = ref([]);
-const sortBy = ref('')
-const searchQuery = ref('')
+const filters = reactive({
+  sortBy: 'title',
+  searchQuery: ''
+})
 const OnChangeSelect = (event) => {
- sortBy.value = event.target.value
+  filters.sortBy = event.target.value
+}
+
+const OnChangeSearchInput = (event) => {
+  console.log(filters.searchQuery)
+  console.log(event.target.value)
+  filters.searchQuery = event.target.value
+}
+const fetchItems = async () => {
+  try {
+    const params = {
+      sortBy: filters.sortBy
+    }
+    if(filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`
+    }
+    const { data } = await axios.get('https://b340a1812fbe2047.mokky.dev/items', {
+      params
+       
+    })
+    items.value = data
+  } catch (err) {
+    console.log(err)
+  }
 }
 // onMounted(() => {
-  // fetch('https://b340a1812fbe2047.mokky.dev/items')
-  // .then((res) => res.json())
-  // .then((data) => {
-  // console.log(data)
-  // })
-  // axios.get('https://b340a1812fbe2047.mokky.dev/items').then((resp) => console.log(resp.data))
+// fetch('https://b340a1812fbe2047.mokky.dev/items')
+// .then((res) => res.json())
+// .then((data) => {
+// console.log(data)
+// })
+// axios.get('https://b340a1812fbe2047.mokky.dev/items').then((resp) => console.log(resp.data))
 
-  // ;}
-  onMounted(async () => {
-    try {
-      const { data } = await axios.get('https://b340a1812fbe2047.mokky.dev/items')
-    items.value = data
-      console.log(data)
-    } catch (err) {
-      console.log(err)
-    }
-  
-})
-watch(sortBy, async () => {
-  try {
-      const { data } = await axios.get('https://b340a1812fbe2047.mokky.dev/items?sortBy=' + sortBy.value)
-    items.value = data
-  
-    } catch (err) {
-      console.log(err)
-    }
-})
+// ;}
+onMounted(
+  fetchItems
 
-
+  // async () => {
+  //   try {
+  //     const { data } = await axios.get('https://b340a1812fbe2047.mokky.dev/items')
+  //     items.value = data
+  //     console.log(data)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
+)
+watch(filters, fetchItems)
 </script>
 
 <template>
@@ -52,7 +70,12 @@ watch(sortBy, async () => {
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold mb-8">Все кроссовки</h2>
         <div class="flex gap-4">
-          <select @change="OnChangeSelect" class="py-2 px-3 border rounded-md outline-none" name="" id="">
+          <select
+            @change="OnChangeSelect"
+            class="py-2 px-3 border rounded-md outline-none"
+            name=""
+            id=""
+          >
             <option value="name">По названию</option>
             <option value="price">По цене(дешевые)</option>
             <option value="-price">По цене(дорогие)</option>
@@ -60,6 +83,7 @@ watch(sortBy, async () => {
           <div class="relative">
             <img class="absolute left-4 top-3" src="/search.svg" alt="" />
             <input
+              @input="OnChangeSearchInput"
               class="border rounded-md py-2 pl-11 pr-4 outline-none focus:border-gray-400"
               type="text"
               placeholder="поиск..."

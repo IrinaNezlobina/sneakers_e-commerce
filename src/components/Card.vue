@@ -30,7 +30,8 @@ defineProps({
   isFavorite: Boolean,
   isAdded: Boolean,
   onClickAdd: Function,
-  onClickFavorite: Function
+  onClickFavorite: Function,
+
 })
 </script>
 

@@ -10,7 +10,7 @@
       :title="item.title"
       :image-url="item.imageUrl"
     />
-    11
+    
   </div>
 </template>
 
